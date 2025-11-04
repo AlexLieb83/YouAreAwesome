@@ -11,7 +11,8 @@ struct ContentView: View {
     //    @State private var message = "I am a programmer"
     @State private var message = ""
     @State private var imageName = ""
-    @State private var buttonPressed = false
+    @State var imageNumber = 0
+    @State var messageNumber = 0
     
     
     var body: some View {
@@ -28,14 +29,29 @@ struct ContentView: View {
                 .font(.largeTitle)
                 .fontWeight(.heavy)
                 .foregroundStyle(.red)
+                .multilineTextAlignment(.center)
             
             Spacer()
             
-            Button("Press Me") {
-                buttonPressed.toggle()
+            Button("Show Message") {
+                let messages = ["You Are Awesome",
+                                "You Are Amazing",
+                                "You Are Fantastic",
+                                "Keep Up The Good Work"]
                 
-                message = buttonPressed ? "You Are Awesome" : "You Are Great"
-                imageName = buttonPressed ? "image0" : "image1"
+                message = messages[messageNumber]
+                messageNumber += 1
+                
+                if messageNumber == messages.count {
+                    messageNumber = 0
+                }
+                
+                imageName = "image\(imageNumber)"
+                imageNumber += 1
+                
+                if imageNumber > 9 {
+                    imageNumber = 0
+                }
             }
             .buttonStyle(.glassProminent)
             .font(.title2)
