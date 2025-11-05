@@ -6,13 +6,19 @@
 //
 
 import SwiftUI
+import AVFAudio
 
 struct ContentView: View {
     //    @State private var message = "I am a programmer"
     @State private var message = ""
     @State private var imageName = ""
-    @State var imageNumber = 0
-    @State var messageNumber = 0
+    @State private var soundName = ""
+    @State private var lastMessageNumber = -1
+    @State private var lastImageNumber = -1
+    @State private var lastSoundNumber = -1
+    @State private var audioPlayer: AVAudioPlayer!
+    let numberOfImages = 9 // images labeled image0 - image9
+    let numberOfSounds = 6 // sounds labeled sound0 - sound5
     
     
     var body: some View {
@@ -27,6 +33,8 @@ struct ContentView: View {
                 .minimumScaleFactor(0.5 )
                 .frame(height: 100)
                 .animation(.easeInOut(duration: 0.15), value: message)
+            
+            Spacer()
             
             Image(imageName)
                 .resizable()
@@ -43,18 +51,38 @@ struct ContentView: View {
                                 "You Are Fantastic",
                                 "Keep Up The Good Work"]
                 
+                var messageNumber: Int
+                repeat {
+                    messageNumber = Int.random(in: 0...messages.count - 1)
+                } while messageNumber == lastMessageNumber
                 message = messages[messageNumber]
-                messageNumber += 1
+                lastMessageNumber = messageNumber
                 
-                if messageNumber == messages.count {
-                    messageNumber = 0
-                }
                 
+                var imageNumber: Int
+                repeat {
+                    imageNumber = Int.random(in: 0...numberOfImages - 1)
+                } while imageNumber == lastImageNumber
                 imageName = "image\(imageNumber)"
-                imageNumber += 1
+                lastImageNumber = imageNumber
                 
-                if imageNumber > 9 {
-                    imageNumber = 0
+                var soundNumber: Int
+                repeat {
+                    soundNumber = Int.random(in: 0...numberOfSounds - 1)
+                } while soundNumber == lastSoundNumber
+                lastSoundNumber = soundNumber
+                soundName = "sound\(soundNumber)"
+                
+                
+                guard let soundFile = NSDataAsset(name: soundName) else {
+                    print("Could not load sound file: \(soundName)")
+                    return
+                }
+                do {
+                    audioPlayer = try AVAudioPlayer(data: soundFile.data)
+                    audioPlayer.play()
+                } catch {
+                    print("Error: \(error.localizedDescription)")
                 }
             }
             .buttonStyle(.glassProminent)
